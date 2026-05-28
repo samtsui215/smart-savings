@@ -143,7 +143,11 @@ export default function Dashboard() {
             <CategoryForm tree={tree} onCreated={refresh} />
           </div>
 
-          <aside className="space-y-6">
+          {/* self-start stops the grid from stretching this cell to the
+              (taller) buckets column, which was leaving dead space below.
+              sticky keeps the panels in view while the buckets list scrolls
+              — top offset clears the 56px sticky header. */}
+          <aside className="space-y-6 self-start lg:sticky lg:top-[72px]">
             <TransactionPanel categories={data.categories} onCommitted={refresh} />
             <AffordCheck />
           </aside>
