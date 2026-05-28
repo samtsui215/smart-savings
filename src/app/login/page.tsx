@@ -1,12 +1,23 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { emailLogin, googleSignIn, friendlyAuthError } from "@/lib/firebase/signIn";
 import AuthShell, { GoogleGlyph } from "@/components/AuthShell";
 
+// useSearchParams() forces a client bail-out, which Next requires to be
+// wrapped in a Suspense boundary or the production build fails to prerender
+// this page. The wrapper satisfies that; the inner component holds the form.
 export default function LoginPage() {
+  return (
+    <Suspense>
+      <LoginForm />
+    </Suspense>
+  );
+}
+
+function LoginForm() {
   const router = useRouter();
   const params = useSearchParams();
   // Only honor a same-site path. Reject absolute URLs ("https://evil.com")
