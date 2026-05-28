@@ -1,0 +1,122 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+  --bg: #fafafa;
+  --bg-elev: #ffffff;
+}
+
+html, body {
+  background: var(--bg);
+  color: theme("colors.ink.900");
+  font-feature-settings: "ss01", "cv11", "cv02";
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Subtle dotted backdrop used on auth + landing screens */
+.bg-dotted {
+  background-image: theme("backgroundImage.grid");
+  background-size: 22px 22px;
+}
+
+/*
+ * Ambient backdrop — mesh-gradient style.
+ *
+ * Four soft radial blobs (violet · blue · pink · teal) sit in each corner,
+ * blending together across the page. background-attachment: fixed keeps the
+ * mesh anchored to the viewport so the colors don't smear as you scroll.
+ *
+ * A whisper of dot grid on top adds texture without competing with the
+ * color. White cards layer over this and read as deliberately white, not
+ * as the default.
+ */
+.bg-ambient {
+  background-color: #f7f7fb;
+  background-image:
+    /* dot grid — very low alpha so it just hints at texture */
+    radial-gradient(circle at 1px 1px, rgba(15, 23, 42, 0.045) 1px, transparent 0),
+    /* violet glow, top-left */
+    radial-gradient(55% 50% at 8% 4%,  rgba(167, 139, 250, 0.40) 0%, transparent 65%),
+    /* blue glow, top-right */
+    radial-gradient(50% 50% at 96% 6%, rgba(96, 165, 250, 0.32) 0%, transparent 65%),
+    /* pink glow, bottom-right */
+    radial-gradient(50% 50% at 92% 96%, rgba(244, 114, 182, 0.30) 0%, transparent 65%),
+    /* teal glow, bottom-left */
+    radial-gradient(48% 48% at 4% 92%, rgba(94, 234, 212, 0.28) 0%, transparent 65%);
+  background-size: 24px 24px, auto, auto, auto, auto;
+  background-attachment: fixed;
+}
+
+@layer components {
+  .card {
+    @apply rounded-2xl bg-white border border-ink-200/70 shadow-card;
+  }
+  .card-hover {
+    @apply transition hover:-translate-y-px hover:shadow-lift;
+  }
+
+  .btn {
+    @apply inline-flex items-center justify-center gap-1.5 rounded-xl px-4 py-2.5 text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-white disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  .btn-primary {
+    @apply btn bg-ink-900 text-white hover:bg-ink-800 active:bg-ink-950;
+  }
+  .btn-accent {
+    @apply btn text-white bg-violet-sheen shadow-glow hover:brightness-110 active:brightness-95;
+  }
+  .btn-secondary {
+    @apply btn bg-white text-ink-800 border border-ink-200 hover:bg-ink-50;
+  }
+  .btn-ghost {
+    @apply btn text-ink-700 hover:bg-ink-100;
+  }
+  .btn-danger {
+    @apply btn bg-red-50 text-red-700 border border-red-200 hover:bg-red-100;
+  }
+
+  .input {
+    @apply w-full rounded-xl border border-ink-200 bg-white px-3.5 py-2.5 text-sm text-ink-900 placeholder:text-ink-400 transition focus:outline-none focus:border-accent-500 focus:ring-4 focus:ring-accent-500/10;
+  }
+  .label {
+    @apply block text-xs font-medium uppercase tracking-wider text-ink-500 mb-1.5;
+  }
+
+  .chip {
+    @apply inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium;
+  }
+  .chip-neutral { @apply chip bg-ink-100 text-ink-600; }
+  .chip-accent  { @apply chip bg-accent-50  text-accent-700; }
+  .chip-warning { @apply chip bg-amber-50   text-amber-700; }
+  .chip-success { @apply chip bg-emerald-50 text-emerald-700; }
+  .chip-danger  { @apply chip bg-red-50     text-red-700; }
+
+  .segmented {
+    @apply inline-flex items-center bg-ink-100 p-1 rounded-xl text-sm;
+  }
+  .segmented > button {
+    @apply px-3 py-1.5 rounded-lg text-ink-600 transition capitalize;
+  }
+  .segmented > button[aria-pressed="true"] {
+    @apply bg-white text-ink-900 shadow-soft;
+  }
+
+  .skeleton {
+    @apply rounded-lg bg-gradient-to-r from-ink-100 via-ink-200 to-ink-100 bg-[length:200%_100%] animate-shimmer;
+  }
+}
+
+/* Pretty numbers, monospaced digits where alignment matters */
+.tabular { font-variant-numeric: tabular-nums; }
+
+/* Recharts overrides for a cleaner look */
+.recharts-default-tooltip {
+  background: rgba(255, 255, 255, 0.96) !important;
+  border: 1px solid theme("colors.ink.200") !important;
+  border-radius: 12px !important;
+  box-shadow: theme("boxShadow.lift") !important;
+  padding: 8px 12px !important;
+}
+.recharts-tooltip-item { color: theme("colors.ink.700") !important; }

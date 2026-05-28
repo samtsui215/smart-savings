@@ -1,0 +1,102 @@
+// Smart Savings Allocator — database schema.
+//
+// Money is stored as INTEGER CENTS throughout. Floating-point math is
+// forbidden anywhere near a balance: it silently breaks the core invariant
+// (sum(categories.balance) == user.totalBalance). Conversion to/from
+// dollar-strings happens only at the HTTP boundary.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  // Pooled connection used by the app at runtime. On serverless (Vercel)
+  // this MUST be a pooled URL (PgBouncer / Neon pooler) or you'll exhaust
+  // Postgres connections under concurrency.
+  url       = env("DATABASE_URL")
+  // Direct (non-pooled) connection used only for `prisma migrate`. Pooled
+  // connections can't run migrations. Locally this can equal DATABASE_URL.
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  // Firebase Authentication UID. Null until the user first signs in via
+  // Firebase; we match an existing row by email on first login and attach
+  // the uid, so legacy accounts keep their data. Authentication itself is
+  // owned by Firebase — we store no password.
+  firebaseUid  String?  @unique
+  // Cached aggregate of all category balances. Mutated only inside DB
+  // transactions that also mutate the corresponding category rows, so
+  // the invariant cannot drift.
+  totalBalance Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  categories   Category[]
+  transactions Transaction[]
+}
+
+model Category {
+  id           String   @id @default(cuid())
+  userId       String
+  // Self-relation: a category may live inside another category (its parent).
+  // We keep onDelete: Restrict so Prisma never silently cascade-deletes a
+  // subtree — app code (DELETE handler) decides what happens to descendants
+  // and sweeps balances into Unassigned to preserve the invariant.
+  parentId     String?
+  name         String
+  balance      Int      @default(0)
+  targetAmount Int?
+  // Manual sort order among siblings (same userId + parentId). New buckets
+  // are appended (max+1) and the dedicated reorder endpoint rewrites all
+  // positions in a group atomically. Lower values sort first.
+  position     Int      @default(0)
+  // Exactly one category per user has isUnassigned = true. It is created
+  // automatically at signup and cannot be deleted. Deposits without an
+  // explicit category default to this bucket.
+  isUnassigned Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  user                User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  parent              Category?     @relation("Subcategories", fields: [parentId], references: [id], onDelete: Restrict, onUpdate: NoAction)
+  children            Category[]    @relation("Subcategories")
+  transactions        Transaction[] @relation("CategoryTransactions")
+  transfersFrom       Transaction[] @relation("TransferFrom")
+  transfersTo         Transaction[] @relation("TransferTo")
+
+  @@unique([userId, name])
+  @@index([userId])
+  @@index([userId, parentId])
+  @@index([userId, parentId, position])
+}
+
+enum TransactionType {
+  DEPOSIT
+  WITHDRAWAL
+  TRANSFER
+}
+
+model Transaction {
+  id              String          @id @default(cuid())
+  userId          String
+  type            TransactionType
+  amount          Int             // cents, always positive
+  note            String?
+  // For DEPOSIT/WITHDRAWAL: categoryId is the affected bucket.
+  // For TRANSFER:           fromCategoryId + toCategoryId are set.
+  categoryId      String?
+  fromCategoryId  String?
+  toCategoryId    String?
+  createdAt       DateTime        @default(now())
+
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category       Category? @relation("CategoryTransactions", fields: [categoryId], references: [id], onDelete: SetNull)
+  fromCategory   Category? @relation("TransferFrom",          fields: [fromCategoryId], references: [id], onDelete: SetNull)
+  toCategory     Category? @relation("TransferTo",            fields: [toCategoryId],   references: [id], onDelete: SetNull)
+
+  @@index([userId, createdAt])
+}
