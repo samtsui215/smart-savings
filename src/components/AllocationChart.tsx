@@ -28,16 +28,18 @@ export default function AllocationChart({ categories }: { categories: CategoryDT
   const total = data.reduce((s, d) => s + d.value, 0);
 
   return (
-    <div className="flex items-center gap-5">
-      <div className="relative w-44 h-44 shrink-0">
+    <div className="flex items-center gap-4 sm:gap-5">
+      {/* Smaller donut on mobile so the legend keeps enough room. Percentage
+          radii let the ring scale with the container instead of clipping. */}
+      <div className="relative w-36 h-36 sm:w-44 sm:h-44 shrink-0">
         <ResponsiveContainer>
           <PieChart>
             <Pie
               data={data}
               dataKey="value"
               nameKey="name"
-              innerRadius={56}
-              outerRadius={82}
+              innerRadius="64%"
+              outerRadius="93%"
               paddingAngle={2}
               stroke="none"
               startAngle={90}
@@ -57,7 +59,7 @@ export default function AllocationChart({ categories }: { categories: CategoryDT
         </div>
       </div>
 
-      <ul className="flex-1 min-w-0 space-y-1.5 text-sm">
+      <ul className="flex-1 min-w-0 space-y-1.5 text-sm pr-2 sm:pr-1">
         {data.slice(0, 5).map((d) => (
           <li key={d.name} className="flex items-center justify-between gap-2 text-ink-700">
             <div className="flex items-center gap-2 min-w-0">

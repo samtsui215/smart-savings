@@ -63,7 +63,7 @@ export default function Dashboard() {
   return (
     <main className="min-h-screen bg-ambient">
       <header className="sticky top-0 z-20 border-b border-ink-200/60 bg-white/70 backdrop-blur-xl">
-        <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <span className="size-9 rounded-xl bg-violet-sheen shadow-glow grid place-items-center">
               {/* allocation mark — stacked bars echoing the buckets / pie */}
@@ -92,7 +92,7 @@ export default function Dashboard() {
         </div>
       </header>
 
-      <div className="max-w-6xl mx-auto px-6 py-8 space-y-6 animate-fade-in">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-5 sm:space-y-6 animate-fade-in">
         {!data.consistent && (
           <div className="card p-4 border-red-200 bg-red-50 text-red-800">
             <p className="font-medium">Data inconsistency detected</p>
@@ -104,12 +104,12 @@ export default function Dashboard() {
         )}
 
         {/* HERO — calm balance summary with goal-coverage progress */}
-        <section className="relative card p-6 md:p-8 overflow-hidden">
+        <section className="relative card p-5 sm:p-6 md:p-8 overflow-hidden">
           {/* Decorative corner glow — barely there, gives the card depth */}
           <div className="absolute -top-24 -right-24 size-72 rounded-full bg-accent-500/8 blur-3xl pointer-events-none" />
           <div className="absolute -bottom-32 -left-24 size-72 rounded-full bg-blue-500/8 blur-3xl pointer-events-none" />
 
-          <div className="relative grid md:grid-cols-[1.2fr_1fr] gap-8 items-center">
+          <div className="relative grid md:grid-cols-[1.2fr_1fr] gap-6 md:gap-8 items-center">
             <div>
               <div className="flex items-center gap-2">
                 <span className="size-1.5 rounded-full bg-accent-500" />
@@ -117,8 +117,8 @@ export default function Dashboard() {
                   Total balance
                 </p>
               </div>
-              <p className="mt-2 text-5xl md:text-[56px] font-semibold tabular tracking-tight text-ink-950 leading-none">
-                <span className="text-ink-400 text-2xl align-top mr-1">$</span>
+              <p className="mt-2 text-4xl sm:text-5xl md:text-[56px] font-semibold tabular tracking-tight text-ink-950 leading-none break-all">
+                <span className="text-ink-400 text-xl sm:text-2xl align-top mr-1">$</span>
                 {data.totalBalance}
               </p>
 
@@ -141,13 +141,16 @@ export default function Dashboard() {
                 </div>
               )}
 
-              <dl className="mt-6 grid grid-cols-3 gap-6 border-t border-ink-100 pt-4">
+              <dl className="mt-6 grid grid-cols-3 gap-3 sm:gap-6 border-t border-ink-100 pt-4">
                 <Stat label="Buckets" value={String(data.categories.length)} accent="accent" />
                 <Stat label="Funded"  value={String(fundedCategories)}       accent="emerald" />
                 <Stat label="Low"     value={String(lowCount)}               accent={lowCount > 0 ? "amber" : "neutral"} />
               </dl>
             </div>
-            <div className="md:border-l md:border-ink-100 md:pl-8">
+            {/* On mobile the chart sits below the balance with a top divider;
+                on md+ it moves beside it with a left divider. min-w-0 lets the
+                legend shrink/truncate instead of pushing the % to the edge. */}
+            <div className="min-w-0 border-t border-ink-100 pt-6 md:border-t-0 md:pt-0 md:border-l md:pl-8">
               <AllocationChart categories={data.categories} />
             </div>
           </div>
@@ -155,7 +158,7 @@ export default function Dashboard() {
 
         {/* MAIN GRID */}
         <section className="grid lg:grid-cols-[2fr_1fr] gap-6">
-          <div className="space-y-4">
+          <div className="min-w-0 space-y-4">
             <BucketTree tree={tree} onChange={refresh} />
             <CategoryForm tree={tree} onCreated={refresh} />
           </div>
@@ -164,7 +167,7 @@ export default function Dashboard() {
               (taller) buckets column, which was leaving dead space below.
               sticky keeps the panels in view while the buckets list scrolls
               — top offset clears the 56px sticky header. */}
-          <aside className="space-y-6 self-start lg:sticky lg:top-[72px]">
+          <aside className="min-w-0 space-y-6 self-start lg:sticky lg:top-[72px]">
             <TransactionPanel categories={data.categories} onCommitted={refresh} />
             <AffordCheck />
           </aside>

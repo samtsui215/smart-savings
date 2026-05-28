@@ -211,8 +211,8 @@ function BucketRow({
       />
 
       <div
-        className="flex items-center gap-2 px-5 py-3 hover:bg-ink-50/70 transition"
-        style={{ paddingLeft: 20 + indent }}
+        className="flex items-center gap-2 pr-3 sm:pr-5 py-3 hover:bg-ink-50/70 transition"
+        style={{ paddingLeft: 16 + indent }}
       >
         {/* Drag handle holds the drag listeners so the rest of the row
             stays clickable for edit/add/etc. */}
@@ -222,7 +222,7 @@ function BucketRow({
           {...listeners}
           title="Drag to reorder"
           aria-label="Drag to reorder"
-          className="size-6 grid place-items-center text-ink-300 hover:text-ink-600 cursor-grab active:cursor-grabbing opacity-30 group-hover:opacity-100 transition -ml-2"
+          className="size-6 grid place-items-center text-ink-300 hover:text-ink-600 cursor-grab active:cursor-grabbing opacity-40 max-sm:opacity-70 group-hover:opacity-100 transition -ml-2"
         >
           <DragGlyph />
         </button>
@@ -372,7 +372,7 @@ function RowActions({
   onChange: () => void;
 }) {
   return (
-    <div className="flex items-center gap-0.5 shrink-0 opacity-50 group-hover:opacity-100 transition">
+    <div className="flex items-center gap-0.5 shrink-0 opacity-60 max-sm:opacity-100 group-hover:opacity-100 transition">
       <button
         onClick={onAdd}
         title="Add sub-bucket"

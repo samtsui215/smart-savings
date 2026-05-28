@@ -14,6 +14,11 @@ html, body {
   font-feature-settings: "ss01", "cv11", "cv02";
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+  /* Prevent any stray element from making the page wider than the screen
+     (which is what lets you zoom/scroll horizontally on mobile). `clip` is
+     used instead of `hidden` because `hidden` turns the body into a scroll
+     container and would break the dashboard's `position: sticky` sidebar. */
+  overflow-x: clip;
 }
 
 /* Subtle dotted backdrop used on auth + landing screens */

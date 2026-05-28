@@ -114,7 +114,7 @@ export default function TransactionPanel({
         )}
 
         {tab === "transfer" && (
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="label">From</label>
               <select className="input" value={fromId} onChange={(e) => setFromId(e.target.value)}>

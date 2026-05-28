@@ -21,6 +21,18 @@ const AMOUNT_PREFIX: Record<TransactionType, string> = {
   DEPOSIT: "+", WITHDRAWAL: "−", TRANSFER: "",
 };
 
+// Compact timestamp, e.g. "5/27/26, 7:28 PM" — no seconds / full year, so the
+// metadata line fits on one row on a phone instead of wrapping.
+function formatWhen(iso: string): string {
+  return new Date(iso).toLocaleString(undefined, {
+    month: "numeric",
+    day: "numeric",
+    year: "2-digit",
+    hour: "numeric",
+    minute: "2-digit",
+  });
+}
+
 export default function TransactionHistory({ recent }: { recent: TransactionDTO[] }) {
   return (
     <section className="card overflow-hidden">
@@ -55,7 +67,7 @@ export default function TransactionHistory({ recent }: { recent: TransactionDTO[
               <li key={t.id} className="flex items-center justify-between gap-4 px-5 py-3.5 hover:bg-ink-50/60 transition">
                 <div className="flex items-center gap-3 min-w-0">
                   <span
-                    className="size-10 shrink-0 rounded-xl grid place-items-center text-white text-sm font-medium ring-1 ring-inset ring-black/5"
+                    className="size-9 sm:size-10 shrink-0 rounded-xl grid place-items-center text-white text-sm font-medium ring-1 ring-inset ring-black/5"
                     style={
                       color
                         ? { background: `linear-gradient(135deg, ${color.hex}, ${color.hex}cc)` }
@@ -66,17 +78,11 @@ export default function TransactionHistory({ recent }: { recent: TransactionDTO[
                   </span>
                   <div className="min-w-0">
                     <p className="text-sm text-ink-800 truncate">{describe(t)}</p>
-                    <p className="text-xs text-ink-500 mt-0.5">
-                      <span>{TYPE_GLYPH[t.type]}</span>
-                      <span className="mx-1.5 capitalize">{t.type.toLowerCase()}</span>
-                      <span className="text-ink-300">·</span>
-                      <span className="ml-1.5">{new Date(t.createdAt).toLocaleString()}</span>
-                      {t.note && (
-                        <>
-                          <span className="text-ink-300 mx-1.5">·</span>
-                          <span className="italic">{t.note}</span>
-                        </>
-                      )}
+                    {/* Single compact line: type already shown above + by the
+                        amount color, so metadata is just a short date + note. */}
+                    <p className="text-xs text-ink-500 mt-0.5 truncate">
+                      {formatWhen(t.createdAt)}
+                      {t.note && <span className="italic"> · {t.note}</span>}
                     </p>
                   </div>
                 </div>
