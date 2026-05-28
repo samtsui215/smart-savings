@@ -62,15 +62,32 @@ export default function Dashboard() {
 
   return (
     <main className="min-h-screen bg-ambient">
-      <header className="sticky top-0 z-20 bg-white/95 backdrop-blur border-b border-ink-200">
+      <header className="sticky top-0 z-20 border-b border-ink-200/60 bg-white/70 backdrop-blur-xl">
         <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="size-7 rounded-lg bg-violet-sheen shadow-glow" />
-            <span className="font-semibold tracking-tight">Smart Savings</span>
+          <div className="flex items-center gap-2.5">
+            <span className="size-9 rounded-xl bg-violet-sheen shadow-glow grid place-items-center">
+              {/* allocation mark — stacked bars echoing the buckets / pie */}
+              <svg viewBox="0 0 24 24" className="w-[18px] h-[18px] text-white" fill="currentColor" aria-hidden>
+                <rect x="4" y="5"    width="16"   height="3.4" rx="1.7" />
+                <rect x="4" y="10.3" width="10.5" height="3.4" rx="1.7" opacity="0.85" />
+                <rect x="4" y="15.6" width="13.5" height="3.4" rx="1.7" opacity="0.7" />
+              </svg>
+            </span>
+            <div className="leading-none">
+              <div className="font-semibold tracking-tight text-ink-900">Smart Savings</div>
+              <div className="mt-0.5 text-[10px] font-medium uppercase tracking-[0.16em] text-ink-400">
+                Allocator
+              </div>
+            </div>
           </div>
-          <div className="flex items-center gap-3">
-            <span className="hidden sm:inline text-sm text-ink-500">{data.email}</span>
-            <button className="btn-ghost" onClick={logout}>Sign out</button>
+          <div className="flex items-center gap-2.5">
+            <div className="hidden sm:flex items-center gap-2 rounded-full border border-ink-200/70 bg-white/60 py-1 pl-1 pr-3">
+              <span className="size-6 rounded-full bg-violet-sheen text-white text-[11px] font-semibold grid place-items-center">
+                {(data.email?.[0] ?? "?").toUpperCase()}
+              </span>
+              <span className="text-sm text-ink-600 max-w-[180px] truncate">{data.email}</span>
+            </div>
+            <button className="btn-secondary text-sm px-3 py-1.5" onClick={logout}>Sign out</button>
           </div>
         </div>
       </header>
